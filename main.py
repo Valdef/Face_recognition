@@ -1,21 +1,30 @@
 import cv2
 import numpy as np
 import face_recognition
+import os 
+from tqdm import tqdm
 
-imgVal= face_recognition.load_image_file("Val_dataset/IMG_01.jpg")
-imgVal = cv2.cvtColor(imgVal, cv2.COLOR_BGR2RGB)
-imgTest = face_recognition.load_image_file("Val_dataset/IMG_02.jpg")
-imgTest = cv2.cvtColor(imgTest, cv2.COLOR_BGR2RGB)
+path = 'Val_dataset'
+images = []
+classNames = []
+myList = os.listdir(path)
 
-faceLoc = face_recognition.face_locations(imgVal)[0]
-faceEnc = face_recognition.face_encodings(imgVal)[0]
-cv2.rectangle(imgVal, (faceLoc[3], faceLoc[0]), (faceLoc[1], faceLoc[2]), (255,0,255), 2)
+for cls in myList:
+    curImg = cv2.imread(f'{path}/{cls}')
+    images.append(curImg)
+    classNames.append(os.path.splitext(cls)[0])
 
-faceLocTest = face_recognition.face_locations(imgTest)[0]
-faceEncTest = face_recognition.face_encodings(imgTest)[0]
-cv2.rectangle(imgTest, (faceLocTest[3], faceLocTest[0]), (faceLocTest[1], faceLocTest[2]), (255,0,255), 2)
+def findEncodings(images):
+    encodeList = []
+    for img in tqdm(images):
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        try:
+            encode = face_recognition.face_encodings(img)[0]
+        except:
+            continue
+        encodeList.append(encode)
+    return encodeList
 
-
-cv2.imshow("Val", imgVal)
-cv2.imshow("Val Test", imgTest)
-cv2.waitKey(0)
+encodeListKnown = findEncodings(images)
+print('Encoding Complete')
+print('Face Encoded: ', len(encodeListKnown))
