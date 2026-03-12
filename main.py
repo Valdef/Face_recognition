@@ -13,7 +13,6 @@ for cls in myList:
     curImg = cv2.imread(f'{path}/{cls}')
     images.append(curImg)
     classNames.append(os.path.splitext(cls)[0].split('_')[0])
-    print(classNames)
 
 def findEncodings(images):
     encodeList = []
